@@ -1,0 +1,11 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+
+<suite name="Unit" verbose="1" >
+    <test name="Unit"   >
+        <packages>
+            <package name="com.perfecto.reportium.*">
+                <exclude name="com.perfecto.reportium.integration"/>
+            </package>
+        </packages>
+    </test>
+</suite>
