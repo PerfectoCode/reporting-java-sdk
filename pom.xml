@@ -27,8 +27,8 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <maven.scm.dev-connection>scm:git:git@github.com:PerfectoCode/reporting-java-sdk.git</maven.scm.dev-connection>
-		
-	
+
+
 
         <maven-release-plugin.version>2.5.3</maven-release-plugin.version>
         <maven-javadoc-plugin.version>3.1.0</maven-javadoc-plugin.version>
@@ -49,18 +49,13 @@
             <id>repo1.perfectomobile.com</id>
             <name>prefecto public artifact repository</name>
             <url>dav:https://repo1.perfectomobile.com/repositories/maven</url>
-        </repository>
-		<repository>
-			<id>central</id>
-			<name>Repo1</name>
-			<url>http://repo1.maven.org/maven2</url>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
-			<snapshots>
-				<enabled>false</enabled>
-				<updatePolicy>never</updatePolicy>
-			</snapshots>
+		        <releases>
+				          <enabled>true</enabled>
+			      </releases>
+      			<snapshots>
+      				<enabled>false</enabled>
+      				<updatePolicy>never</updatePolicy>
+      			</snapshots>
         </repository>
     </distributionManagement>
 
