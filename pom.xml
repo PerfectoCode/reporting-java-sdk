@@ -65,11 +65,6 @@
             <name>prefecto public artifact repository</name>
             <url>dav:https://repo1.perfectomobile.com/repositories/maven</url>
         </repository>
-        <repository>
-            <id>central</id>
-            <name>Repo1</name>
-            <url>http://repo1.maven.org/maven2</url>
-        </repository>
     </distributionManagement>
 
     <dependencyManagement>
