@@ -44,20 +44,20 @@
         <tag>HEAD</tag>
     </scm>
 
-    <repositories>
-        <repository>
-            <id>repo1.perfectomobile.com</id>
-            <name>prefecto public artifact repository</name>
-            <url>dav:https://repo1.perfectomobile.com/repositories/maven</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>false</enabled>
-                <updatePolicy>never</updatePolicy>
-            </snapshots>
-        </repository>
-    </repositories>
+    <!--<repositories>-->
+        <!--<repository>-->
+            <!--<id>repo1.perfectomobile.com</id>-->
+            <!--<name>prefecto public artifact repository</name>-->
+            <!--<url>dav:https://repo1.perfectomobile.com/repositories/maven</url>-->
+            <!--<releases>-->
+                <!--<enabled>true</enabled>-->
+            <!--</releases>-->
+            <!--<snapshots>-->
+                <!--<enabled>false</enabled>-->
+                <!--<updatePolicy>never</updatePolicy>-->
+            <!--</snapshots>-->
+        <!--</repository>-->
+    <!--</repositories>-->
 
     <distributionManagement>
         <repository>
