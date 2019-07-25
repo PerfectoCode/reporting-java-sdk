@@ -5,6 +5,8 @@ import org.apache.http.client.CredentialsProvider;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 
 import java.net.URI;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Class denoting connection data to Reportium server
@@ -16,6 +18,7 @@ public class Connection {
     private HttpHost proxy;
     private CredentialsProvider credentialsProvider;
     private SSLConnectionSocketFactory sslSocketFactory;
+    private Map<String, String> headers;
 
     /**
      * Create a new connection to Reportium backend
@@ -26,6 +29,15 @@ public class Connection {
     public Connection(URI reportingServer, String securityToken) {
         this.securityToken = securityToken;
         this.reportingServer = reportingServer;
+        this.headers = new HashMap<>();
+    }
+
+    public void addHeader(String name, String value) {
+        this.headers.put(name, value);
+    }
+
+    public Map<String, String> getHeaders() {
+        return new HashMap<>(headers);
     }
 
     /**

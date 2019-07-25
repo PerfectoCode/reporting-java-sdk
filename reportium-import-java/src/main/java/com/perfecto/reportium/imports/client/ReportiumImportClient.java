@@ -516,14 +516,24 @@ public class ReportiumImportClient implements DigitalZoomClient, Closeable {
     }
 
     private String get(URI uri, Map<String, String> queryParams) {
-        HttpResponse httpResponse = httpClient.get(uri, queryParams, createSsoHeader());
+
+        HttpResponse httpResponse = httpClient.get(uri, queryParams, getHeaders().toArray(new Header[0]));
         validateResponse(uri, httpResponse);
         return httpResponse.getBody();
     }
 
     private void post(URI uri, Map<String, String> queryParams, HttpEntity entity) {
-        HttpResponse httpResponse = httpClient.post(uri, entity, queryParams, createSsoHeader());
+        HttpResponse httpResponse = httpClient.post(uri, entity, queryParams, getHeaders().toArray(new Header[0]));
         validateResponse(uri, httpResponse);
+    }
+
+    private List<Header> getHeaders() {
+        List<Header> headers = new ArrayList<>();
+        headers.add(createSsoHeader());
+        for (Map.Entry<String, String> entry : connection.getHeaders().entrySet()) {
+            headers.add(new BasicHeader(entry.getKey(), entry.getValue()));
+        }
+        return headers;
     }
 
     private void put(URI uri, Map<String, String> queryParams, HttpEntity entity, String fileName) {
