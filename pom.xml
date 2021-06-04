@@ -22,7 +22,7 @@
         <maven.scm.dev-connection>scm:git:git@github.com:PerfectoCode/reporting-java-sdk.git</maven.scm.dev-connection>
 
         <commons-lang.version>3.9</commons-lang.version>
-        <httpclient.version>4.5.8</httpclient.version>
+        <httpclient.version>4.5.13</httpclient.version>
         <selenium.version>3.141.5</selenium.version>
         <spring.version>5.1.7.RELEASE</spring.version>
         <testng.version>6.9.10</testng.version>
