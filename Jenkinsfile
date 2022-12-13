@@ -31,11 +31,16 @@ pipeline {
             }
         }
 
+        stage('Test') {
+            steps {
+                script {
 
-    }
+                 echo "artifactTag - is ${artifactTag}"   
+                 jobBuild = build job: "reportium-sdk-java-test/boris", parameters: [
+                 string(name: "artifactTag", value: "${artifactTag}")],propagate: false, wait: true
+                
+             }
+         }
+     }
+ }
 }
-
-
-
-
-
