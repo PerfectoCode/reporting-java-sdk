@@ -36,7 +36,7 @@ pipeline {
                 script {
 
                  echo "artifactTag - is ${artifactTag}"   
-                 jobBuild = build job: "reportium-sdk-java-test/boris", parameters: [
+                 jobBuild = build job: "reportium-sdk-java-test/master", parameters: [
                  string(name: "artifactTag", value: "${artifactTag}")],propagate: false, wait: true
                 
              }
