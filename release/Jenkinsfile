@@ -41,7 +41,7 @@ pipeline {
                     maven: 'Maven latest',
                     mavenOpts: '-Xmx2048m -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/temp/dump.hprof',
                     mavenLocalRepo: '/home/ubuntu/.m2/repository') {
-                    sh(script: "mvn --batch-mode release:prepare release:perform -DreleaseVersion=${RELEASE_VERSION} -DdevelopmentVersion=1.0-SNAPSHOT -X"  );
+                    sh(script: "mvn --batch-mode release:prepare release:perform -DreleaseVersion=${RELEASE_VERSION} -DdevelopmentVersion=1.0-SNAPSHOT"  );
                 }
             }
         }
