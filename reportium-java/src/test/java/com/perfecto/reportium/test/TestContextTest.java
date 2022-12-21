@@ -20,6 +20,7 @@ public class TestContextTest {
         assertEquals(context.getCustomFields().size(), 0, "Context identifiers should be empty");
     }
 
+
     @Test
     public void testPopulatedContextWithOneTag() {
         String testExecutionTag = "aaa";
