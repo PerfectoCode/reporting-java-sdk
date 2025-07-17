@@ -20,7 +20,7 @@ pipeline {
                 }
             }
         }
-        stage('BUILD') {
+        stage('BUILD') { 
             steps {
                 script {
                     reportiumPipeline.buildCode()
@@ -33,7 +33,7 @@ pipeline {
                 script {
                  reportiumSdkVersion = "${artifactTag}"
                  jobBuild = build job: "reportium-sdk-java-test/master", parameters: [
-                 string(name: "reportiumSdkVersion", value: "${reportiumSdkVersion}")],propagate: false, wait: true
+                 string(name: "reportiumSdkVersion", value: "${reportiumSdkVersion}")],propagate: true, wait: true
                 
                 }
             }
@@ -43,6 +43,13 @@ pipeline {
                 script {
                     reportiumPipeline.trigger_whitesource_scan()
                 }
+            }
+        }
+    }
+     post {
+        always {
+            script {
+                reportiumPipeline.buildStatusNotification()
             }
         }
     }   
