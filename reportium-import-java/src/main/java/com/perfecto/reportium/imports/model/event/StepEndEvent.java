@@ -5,7 +5,7 @@ public class StepEndEvent extends TestEvent {
     private long endTime;
 
     public StepEndEvent() {
-        super(EventType.TEST_END);
+        super(EventType.STEP_END);
     }
 
     public StepEndEvent(String externalId, String testId, long order) {
