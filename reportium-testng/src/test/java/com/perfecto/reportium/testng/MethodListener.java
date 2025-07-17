@@ -8,7 +8,7 @@ import java.util.Map;
 /**
  * Created by eitanp on 20/3/16.
  */
-public class MethodListener implements IInvokedMethodListener2 {
+public class MethodListener implements IInvokedMethodListener {
 
     private Map<String, Boolean> status(ITestNGMethod testMethod) {
         Map<String, Boolean> testStatus = new HashMap<>(10);
