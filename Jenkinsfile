@@ -45,5 +45,12 @@ pipeline {
                 }
             }
         }
+    }
+     post {
+        always {
+            script {
+                reportiumPipeline.buildStatusNotification()
+            }
+        }
     }   
 }
