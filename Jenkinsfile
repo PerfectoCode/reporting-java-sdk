@@ -20,7 +20,7 @@ pipeline {
                 }
             }
         }
-        stage('BUILD') {
+        stage('BUILD') { 
             steps {
                 script {
                     reportiumPipeline.buildCode()
