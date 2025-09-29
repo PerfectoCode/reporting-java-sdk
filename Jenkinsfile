@@ -3,7 +3,7 @@ library 'aws-access-keys@master'
 pipeline {
     agent { label 'ubuntu-build-slave-java17' }
     parameters {
-        string(name: 'SDK_RELEASE_TAG', defaultValue: '', description: 'Optional explicit SDK version to test')
+        string(name: 'SDK_RELEASE_TAG', defaultValue: '', description: 'SDK Release Tag', trim: true)
     }
     options {
         disableConcurrentBuilds()
