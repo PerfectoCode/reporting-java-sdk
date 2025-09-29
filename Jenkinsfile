@@ -19,7 +19,7 @@ pipeline {
         stage('SETUP BUILD') {
             steps {
                 script {
-                    reportiumPipeline.setupBuild()
+                    setupBuild()
                 }
             }
         }
@@ -97,4 +97,33 @@ def buildCode() {
         }
     }
     echo "Current build currentResult (buildCode): ${currentBuild.currentResult}"
+}
+
+
+def setupBuild() {
+    dir("$WORKSPACE/source") {
+        checkout scm;
+        env.repositoryUrl = sh(script: 'git config --get remote.origin.url', returnStdout: true).trim().split('://')[1];
+        env.project = sh(script: 'basename -s .git `git config --get remote.origin.url`', returnStdout: true).trim();
+        env.commitHash = sh(script: 'git rev-parse HEAD', returnStdout: true).trim();
+        env.PREFIX = sh(script: "echo $commitHash", returnStdout: true).take(9)
+        env.commiterMail = sh(script: 'git --no-pager show -s --format=\'%ae\'', returnStdout: true).trim();
+        env.committerName = sh(script: 'git log -1 --pretty=format:\'%an\'', returnStdout: true).trim();
+        env.slackChannel = reportiumSlack.getSlackChannel(commiterMail);
+        switch (BRANCH_NAME) {
+            case 'master':
+            if (params.SDK_RELEASE_TAG?.trim()) {
+                env.artifactTag = params.SDK_RELEASE_TAG.trim()
+            } else {                                                    
+                env.artifactTag = "1.1.${BUILD_NUMBER}";
+            }
+                break;
+            default:
+                env.artifactTag = "1.1.${JOB_BASE_NAME}.${BUILD_NUMBER}-SNAPSHOT"; // JOB_BASE_NAME is usually "PR-XXX"
+                reportiumSlack.sendSlackMessage("${slackChannel}", "Build ${JOB_NAME}: STARTED :star:", "#14e028");
+                break;
+        }
+    }
+    sh 'env'
+    echo "Current build currentResult (setupBuild): ${currentBuild.currentResult}"
 }
