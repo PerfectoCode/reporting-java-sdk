@@ -2,6 +2,9 @@ library 'aws-access-keys@master'
 
 pipeline {
     agent { label 'ubuntu-build-slave-java17' }
+    parameters {
+        string(name: 'SDK_RELEASE_TAG', defaultValue: '', description: 'Optional explicit SDK version to test')
+    }
     options {
         disableConcurrentBuilds()
         buildDiscarder(logRotator(numToKeepStr: '20', artifactNumToKeepStr: '20'))
@@ -31,7 +34,10 @@ pipeline {
         stage('Test') {
             steps {
                 script {
-                 reportiumSdkVersion = "${artifactTag}"
+                // Pick provided SDK_RELEASE_TAG if non-empty, else fallback to artifactTag
+                 def reportiumSdkVersion = params.SDK_RELEASE_TAG?.trim() ? params.SDK_RELEASE_TAG.trim() : artifactTag
+                 echo "Using reportiumSdkVersion=${reportiumSdkVersion}"
+
                  jobBuild = build job: "reportium-sdk-java-test/master", parameters: [
                  string(name: "reportiumSdkVersion", value: "${reportiumSdkVersion}")],propagate: true, wait: true
                 
