@@ -26,7 +26,7 @@ pipeline {
         stage('BUILD') { 
             steps {
                 script {
-                    reportiumPipeline.buildCode()
+                    buildCode()
                     echo "artifactTag - is ${artifactTag}"
                 }
             }
@@ -59,4 +59,42 @@ pipeline {
             }
         }
     }   
+}
+
+
+def buildCode() {
+    dir("$WORKSPACE/source") {
+        try {
+            withMaven(
+                    maven: 'Maven latest',
+                    mavenOpts: '-Xmx2048m -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/temp/dump.hprof',
+                    mavenLocalRepo: '/home/ubuntu/.m2/repository') {
+                sh(script: "mvn build-helper:parse-version versions:set -DnewVersion=${artifactTag}");
+                sh(script: 'mvn clean install -Pcode-coverage-validation');
+                switch (BRANCH_NAME) {
+                    case 'master':
+                    /*   Disbale Whitesource
+                        sh('''
+                            #!/bin/bash
+                            aws s3 cp s3://unified-agent/wss-unified-agent-20.10.1.jar .
+                            java -jar wss-unified-agent-20.10.1.jar -detect -c wss-generated-file.config
+                            java -jar wss-unified-agent-20.10.1.jar -wss.url https://saas-eu.whitesourcesoftware.com/agent -apiKey e1ebdc4fe28549e5a71bd790288ca2c27f88543eac8e4a6e9f4bedc1763b3810 -product Perfecto -project ${project} -c wss-generated-file.config
+                        ''') */
+                        break;
+                    default:
+                        break;
+                }
+                sh(script: 'mvn deploy -DskipTests -Ppackage-stuff -X');
+            }
+            sh(script: "git tag ${artifactTag} ${commitHash}");
+            withCredentials([usernamePassword(credentialsId: '2cb048f3-6369-4220-bbb7-2668527a8c22	', passwordVariable: 'GIT_TOKEN', usernameVariable: 'GIT_USERNAME')]) {
+                sh "git push https://${GIT_USERNAME}:${GIT_TOKEN}@${repositoryUrl} --tags"
+            }
+        } catch (error) {
+            echo "Current build currentResult (buildCode - catch): ${currentBuild.currentResult}"
+            reportiumSlack.sendSlackMessage("${slackChannel}", "failed to compile the code, build aborted", "#e02814");
+            throw error;
+        }
+    }
+    echo "Current build currentResult (buildCode): ${currentBuild.currentResult}"
 }
