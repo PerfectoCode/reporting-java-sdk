@@ -24,20 +24,19 @@ pipeline {
             steps {
                 script {
                     buildCode()
-                    echo "artifactTag - is ${artifactTag}"
                 }
             }
         }
-        // stage('Test') {
-        //     steps {
-        //         script {
-        //          reportiumSdkVersion = "${artifactTag}"
-        //          jobBuild = build job: "reportium-sdk-java-test/master", parameters: [
-        //          string(name: "reportiumSdkVersion", value: "${reportiumSdkVersion}")],propagate: true, wait: true
+        stage('Test') {
+            steps {
+                script {
+                 reportiumSdkVersion = "${artifactTag}"
+                 jobBuild = build job: "reportium-sdk-java-test/master", parameters: [
+                 string(name: "reportiumSdkVersion", value: "${reportiumSdkVersion}")],propagate: true, wait: true
                 
-        //         }
-        //     }
-        // }
+                }
+            }
+        }
         // stage('WHITESOURCE SCAN') {
         //     steps {
         //         script {
