@@ -79,7 +79,7 @@ def buildCode() {
 
                 // Deployment logic: PR builds deploy snapshots, master releases deploy via pom.xml
                 boolean isMasterRelease = (BRANCH_NAME == 'test-pr') && (params.SDK_RELEASE_TAG?.trim()) 
-                boolean isPrBuild = (env.CHANGE_ID?.trim()) || (BRANCH_NAME != 'master') || (BRANCH_NAME != 'test-pr')
+                boolean isPrBuild = (env.CHANGE_ID?.trim()) || (BRANCH_NAME != 'test-pr') 
                 
                 echo "Deployment decision: isMasterRelease=${isMasterRelease}, isPrBuild=${isPrBuild}, artifactTag=${artifactTag}"
 
