@@ -3,7 +3,7 @@ library 'aws-access-keys@master'
 pipeline {
     agent { label 'ubuntu-build-slave-java17' }
     parameters {
-        string(name: 'SDK_RELEASE_TAG', defaultValue: '', description: 'Supply version to deploy to repo1 (e.g., 4.4.100). Leave empty for snapshot deployment.')
+        string(name: 'SDK_RELEASE_TAG', defaultValue: '', description: 'Supply version to deploy to repo1 (e.g., 4.4.100). Leave empty to deploy to reporting-new-nexus.')
     }
     options {
         disableConcurrentBuilds()
@@ -20,7 +20,7 @@ pipeline {
             steps {
                 script {
                     reportiumPipeline.setupBuild()
-                    // Echo final artifactTag for traceability
+                    // Echo final artifactTag for traceability (instruction #5)
                     echo "Build: branch=${BRANCH_NAME}, artifactTag=${artifactTag}, SDK_RELEASE_TAG=${params.SDK_RELEASE_TAG}"
                 }
             }
@@ -35,7 +35,7 @@ pipeline {
         stage('Test') {
             steps {
                 script {
-                    def testSdkVersion = env.CHANGE_ID ? artifactTag : (params.SDK_RELEASE_TAG ?: artifactTag)
+                    def testSdkVersion = params.SDK_RELEASE_TAG ?: artifactTag
                     echo "Triggering SDK tests with version: ${testSdkVersion}"
                     build job: "reportium-sdk-java-test/master", 
                           parameters: [string(name: "reportiumSdkVersion", value: "${testSdkVersion}")],
@@ -65,27 +65,27 @@ def buildCode() {
                 sh(script: "mvn build-helper:parse-version versions:set -DnewVersion=${artifactTag}")
                 sh(script: 'mvn clean install -Pcode-coverage-validation')
 
-                // Deployment logic   
+                // Deployment logic (instruction #5: artifact flow)
                 boolean isReleaseBuild = (BRANCH_NAME == 'master') && (params.SDK_RELEASE_TAG?.trim())
                 boolean isPrBuild = (env.CHANGE_ID?.trim())
-                boolean isMasterSnapshot = (BRANCH_NAME == 'master') && !params.SDK_RELEASE_TAG?.trim()
+                boolean isMasterBuild = (BRANCH_NAME == 'master') && !params.SDK_RELEASE_TAG?.trim()
                 
-                echo "Deployment decision: branch=${BRANCH_NAME}, isRelease=${isReleaseBuild}, isPR=${isPrBuild}, isMasterSnapshot=${isMasterSnapshot}"
+                echo "Deployment decision: branch=${BRANCH_NAME}, isRelease=${isReleaseBuild}, isPR=${isPrBuild}, isMasterBuild=${isMasterBuild}"
 
                 if (isPrBuild) {
-                    // PR: deploy snapshot to reporting-new-nexus
+                    // PR: deploy snapshot to reporting-new-nexus snapshots
                     def snapshotRepo = 'snapshots::default::http://reporting-new-nexus.aws-dev.perfectomobile.com/repository/maven-snapshots'
                     sh(script: "mvn deploy -DskipTests -Ppackage-stuff -DaltDeploymentRepository=${snapshotRepo}")
                     echo "PR build -> deployed SNAPSHOT ${artifactTag} to ${snapshotRepo}"
                     
-                } else if (isMasterSnapshot) {
-                    // Master without SDK_RELEASE_TAG: deploy snapshot to reporting-new-nexus
-                    def snapshotRepo = 'snapshots::default::http://reporting-new-nexus.aws-dev.perfectomobile.com/repository/maven-snapshots'
-                    sh(script: "mvn deploy -DskipTests -Ppackage-stuff -DaltDeploymentRepository=${snapshotRepo}")
-                    echo "Master snapshot build -> deployed ${artifactTag} to ${snapshotRepo}"
+                } else if (isMasterBuild) {
+                    // Master without SDK_RELEASE_TAG: deploy release version to reporting-new-nexus maven-releases
+                    def releaseRepo = 'releases::default::http://reporting-new-nexus.aws-dev.perfectomobile.com/repository/maven-releases'
+                    sh(script: "mvn deploy -DskipTests -Ppackage-stuff -DaltDeploymentRepository=${releaseRepo}")
+                    echo "Master build -> deployed release version ${artifactTag} to reporting-new-nexus: ${releaseRepo}"
                     
                 } else if (isReleaseBuild) {
-                    // Master with SDK_RELEASE_TAG: deploy release to repo1 via distributionManagement
+                    // Master with SDK_RELEASE_TAG: deploy to repo1 via distributionManagement (external Nexus)
                     sh(script: 'mvn deploy -DskipTests -Ppackage-stuff')
                     echo "Master release build -> deployed version ${artifactTag} to repo1 via pom.xml distributionManagement"
                     
@@ -95,7 +95,7 @@ def buildCode() {
                         sh "git push https://${GIT_USERNAME}:${GIT_TOKEN}@${repositoryUrl} --tags"
                     }
                 } else {
-                    echo "No deployment: branch=${BRANCH_NAME}, no release tag"
+                    echo "No deployment: branch=${BRANCH_NAME}"
                 }
             }
         } catch (error) {
