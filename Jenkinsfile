@@ -92,7 +92,7 @@ def buildCode() {
                     // Git tag release (instruction #5: artifact flow)
                     sh(script: "git tag ${artifactTag} ${commitHash}")
                     withCredentials([usernamePassword(credentialsId: '2cb048f3-6369-4220-bbb7-2668527a8c22', passwordVariable: 'GIT_TOKEN', usernameVariable: 'GIT_USERNAME')]) {
-                        sh "git push https://${GIT_USERNAME}:${GIT_TOKEN}@${repositoryUrl} --tags"
+                        sh "git push https://${GIT_USERNAME}:${GIT_TOKEN}@${repositoryUrl} --tags" 
                     }
                 } else {
                     echo "No deployment: branch=${BRANCH_NAME}"
