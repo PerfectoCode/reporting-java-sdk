@@ -98,7 +98,7 @@ def buildCode() {
                     echo "Master release build -> deployed version ${artifactTag} to internal Nexus: ${releaseRepo}"
                     
                     // Also deploy to repo1 for external consumption (via pom.xml distributionManagement)
-                    sh(script: 'mvn deploy:deploy-file -DskipTests -Ppackage-stuff')
+                    sh(script: 'mvn deploy -DskipTests -Ppackage-stuff')
                     echo "Master release build -> deployed version ${artifactTag} to repo1 via pom.xml distributionManagement"
                     
                     // Git tag release (instruction #5: artifact flow)
