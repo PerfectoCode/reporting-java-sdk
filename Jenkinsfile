@@ -20,6 +20,13 @@ pipeline {
             steps {
                 script {
                     reportiumPipeline.setupBuild()
+                    
+                    // Override artifactTag when SDK_RELEASE_TAG is provided
+                    if (params.SDK_RELEASE_TAG?.trim()) {
+                        env.artifactTag = params.SDK_RELEASE_TAG
+                        echo "Using SDK_RELEASE_TAG override: artifactTag=${artifactTag}"
+                    }
+                    
                     // Echo final artifactTag for traceability (instruction #5)
                     echo "Build: branch=${BRANCH_NAME}, artifactTag=${artifactTag}, SDK_RELEASE_TAG=${params.SDK_RELEASE_TAG}"
                 }
