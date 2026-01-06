@@ -92,8 +92,13 @@ def buildCode() {
                     echo "Master build -> deployed release version ${artifactTag} to reporting-new-nexus: ${releaseRepo}"
                     
                 } else if (isReleaseBuild) {
-                    // Master with SDK_RELEASE_TAG: deploy to repo1 via distributionManagement (external Nexus)
-                    sh(script: 'mvn deploy -DskipTests -Ppackage-stuff')
+                    // Master with SDK_RELEASE_TAG: deploy to internal Nexus first (for tests), then to repo1
+                    def releaseRepo = 'releases::default::http://reporting-new-nexus.aws-dev.perfectomobile.com/repository/maven-releases'
+                    sh(script: "mvn deploy -DskipTests -Ppackage-stuff -DaltDeploymentRepository=${releaseRepo}")
+                    echo "Master release build -> deployed version ${artifactTag} to internal Nexus: ${releaseRepo}"
+                    
+                    // Also deploy to repo1 for external consumption (via pom.xml distributionManagement)
+                    sh(script: 'mvn deploy:deploy-file -DskipTests -Ppackage-stuff')
                     echo "Master release build -> deployed version ${artifactTag} to repo1 via pom.xml distributionManagement"
                     
                     // Git tag release (instruction #5: artifact flow)
