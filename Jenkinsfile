@@ -3,7 +3,7 @@ library 'aws-access-keys@master'
 pipeline {
     agent { label 'ubuntu-build-slave-java17' }
     parameters {
-        string(name: 'SDK_RELEASE_TAG', defaultValue: '', description: 'Supply version to deploy to repo1 (e.g., 4.4.100). Leave empty to deploy to reporting-new-nexus.')
+        string(name: 'SDK_RELEASE_TAG', defaultValue: '', description: 'Supply version to deploy to repo1 (e.g., 4.4.8). Leave empty to deploy to reporting-new-nexus.')
     }
     options {
         disableConcurrentBuilds()
