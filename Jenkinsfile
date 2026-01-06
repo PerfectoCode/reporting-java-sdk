@@ -33,11 +33,6 @@ pipeline {
             }
         }
         stage('Test') {
-            when {
-                expression { 
-                    env.CHANGE_ID?.trim() || ((BRANCH_NAME == 'master') && params.SDK_RELEASE_TAG?.trim())
-                }
-            }
             steps {
                 script {
                     def testSdkVersion = env.CHANGE_ID ? artifactTag : (params.SDK_RELEASE_TAG ?: artifactTag)
