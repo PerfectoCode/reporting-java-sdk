@@ -45,7 +45,7 @@ public class ExecutionContextPopulator {
         if (target.getNumber() == 0) {
             String property = SystemPropertyUtils.getSystemProperty(jobNumberParameterNameV2, jobNumberParameterNameV1);
             if (StringUtils.isNotBlank(property)) {
-                target.setNumber(Integer.parseInt(property));
+                target.setNumber(Long.parseLong(property));
             }
         }
 
