@@ -19,6 +19,7 @@ import static org.testng.Assert.assertEquals;
  * Test case for {@link PerfectoReportiumClient}
  */
 public class PerfectoReportiumClientTest {
+    public static final String EXPECTED_REPORT_URL = "https://tenant.reporting.perfectomobile.com/library?externalId%5B0%5D=32f76d03";
 
     /**
      * Marker interface for EasyMock to simulate a RemoteWebDriver.
@@ -48,7 +49,7 @@ public class PerfectoReportiumClientTest {
         client.testStep("step1");
         client.testStep("step2");
         client.testStop(TestResultFactory.createFailure("Just because", new Throwable("Yikes")));
-        assertEquals(client.getReportUrl(), "link");
+        assertEquals(client.getReportUrl(), "/link");
 
         verify(webDriverMock, capabilitiesMock);
     }
@@ -73,4 +74,26 @@ public class PerfectoReportiumClientTest {
     public void testRequiredWebDriver() {
         new PerfectoExecutionContext.PerfectoExecutionContextBuilder().build();
     }
+    
+    @Test
+    public void testGetReportUrl_WithQueryParameters() {
+        DriverWithCapabilities webDriverMock = createMock(DriverWithCapabilities.class);
+        PerfectoExecutionContext context = new PerfectoExecutionContext.PerfectoExecutionContextBuilder()
+                .withWebDriver(webDriverMock)
+                .build();
+        PerfectoReportiumClient client = new PerfectoReportiumClient(context);
+        Capabilities capabilitiesMock = createMock(Capabilities.class);
+
+        String urlWithParams = "https://tenant.reporting.perfectomobile.com/library?externalId[0]=32f76d03";
+        expect(webDriverMock.getCapabilities()).andReturn(capabilitiesMock);
+        expect(capabilitiesMock.getCapability(eq(Constants.Capabilities.executionReportUrl))).andReturn(urlWithParams);
+
+        replay(webDriverMock, capabilitiesMock);
+
+        String actualUrl = client.getReportUrl();
+        assertEquals(actualUrl, EXPECTED_REPORT_URL);
+
+        verify(webDriverMock, capabilitiesMock);
+    }
+
 }

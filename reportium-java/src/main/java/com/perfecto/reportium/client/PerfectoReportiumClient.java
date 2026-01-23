@@ -11,12 +11,15 @@ import com.perfecto.reportium.test.TestContext;
 import com.perfecto.reportium.test.result.TestResult;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.http.client.utils.URIBuilder;
 import org.openqa.selenium.HasCapabilities;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 
 import java.util.*;
 import java.util.logging.Logger;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 import static com.perfecto.reportium.model.util.ExecutionContextPopulator.EQUALS;
 
@@ -218,8 +221,35 @@ class PerfectoReportiumClient implements ReportiumClient {
         if (value == null) {
             return null;
         }
+        
+        try {
+            String reportUrl = String.valueOf(value);
+            URI originalUri = new URI(reportUrl);
 
-        return String.valueOf(value);
+            URIBuilder uriBuilder = new URIBuilder()
+                    .setScheme(originalUri.getScheme())
+                    .setHost(originalUri.getHost())
+                    .setPort(originalUri.getPort())
+                    .setPath(originalUri.getPath());
+
+            // Parse and add query parameters - URIBuilder will encode them
+            if (originalUri.getQuery() != null) {
+                String[] pairs = originalUri.getQuery().split("&");
+                for (String pair : pairs) {
+                    String[] keyValue = pair.split("=", 2);
+                    if (keyValue.length == 2) {
+                        uriBuilder.addParameter(keyValue[0], keyValue[1]);
+                    } else {
+                        uriBuilder.addParameter(keyValue[0], "");
+                    }
+                }
+            }
+
+            return uriBuilder.build().toString();
+
+        } catch (URISyntaxException e) {
+            throw new ReportiumException("Failed to create report URL", e);
+        }
     }
 
     private void executeScript(String script, Map<String, Object> params) {
