@@ -16,10 +16,10 @@ import org.openqa.selenium.HasCapabilities;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 
-import java.util.*;
-import java.util.logging.Logger;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.*;
+import java.util.logging.Logger;
 
 import static com.perfecto.reportium.model.util.ExecutionContextPopulator.EQUALS;
 
@@ -225,7 +225,6 @@ class PerfectoReportiumClient implements ReportiumClient {
         try {
             String reportUrl = String.valueOf(value);
             URI originalUri = new URI(reportUrl);
-
             URIBuilder uriBuilder = new URIBuilder()
                     .setScheme(originalUri.getScheme())
                     .setHost(originalUri.getHost())
@@ -244,11 +243,10 @@ class PerfectoReportiumClient implements ReportiumClient {
                     }
                 }
             }
-
             return uriBuilder.build().toString();
-
         } catch (URISyntaxException e) {
-            throw new ReportiumException("Failed to create report URL", e);
+            // Fallback to previous behavior: return the raw capability string
+            return String.valueOf(value);
         }
     }
 

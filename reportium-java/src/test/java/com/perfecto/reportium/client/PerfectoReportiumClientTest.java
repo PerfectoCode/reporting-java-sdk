@@ -20,6 +20,7 @@ import static org.testng.Assert.assertEquals;
  */
 public class PerfectoReportiumClientTest {
     public static final String EXPECTED_REPORT_URL = "https://tenant.reporting.perfectomobile.com/library?externalId%5B0%5D=32f76d03";
+    public static final String REPORT_URL = "https://tenant.reporting.perfectomobile.com/library?externalId[0]=32f76d03";
 
     /**
      * Marker interface for EasyMock to simulate a RemoteWebDriver.
@@ -41,7 +42,7 @@ public class PerfectoReportiumClientTest {
         expect(webDriverMock.executeScript(eq("mobile:test:step"), isA(Map.class))).andReturn(2000).times(2);
         expect(webDriverMock.executeScript(eq("mobile:test:end"), isA(Map.class))).andReturn(3000);
         expect(webDriverMock.getCapabilities()).andReturn(capabilitiesMock);
-        expect(capabilitiesMock.getCapability(eq(Constants.Capabilities.executionReportUrl))).andReturn("link");
+        expect(capabilitiesMock.getCapability(eq(Constants.Capabilities.executionReportUrl))).andReturn(REPORT_URL);
 
         replay(webDriverMock, capabilitiesMock);
 
@@ -49,7 +50,7 @@ public class PerfectoReportiumClientTest {
         client.testStep("step1");
         client.testStep("step2");
         client.testStop(TestResultFactory.createFailure("Just because", new Throwable("Yikes")));
-        assertEquals(client.getReportUrl(), "/link");
+        assertEquals(client.getReportUrl(), EXPECTED_REPORT_URL);
 
         verify(webDriverMock, capabilitiesMock);
     }
@@ -84,9 +85,8 @@ public class PerfectoReportiumClientTest {
         PerfectoReportiumClient client = new PerfectoReportiumClient(context);
         Capabilities capabilitiesMock = createMock(Capabilities.class);
 
-        String urlWithParams = "https://tenant.reporting.perfectomobile.com/library?externalId[0]=32f76d03";
         expect(webDriverMock.getCapabilities()).andReturn(capabilitiesMock);
-        expect(capabilitiesMock.getCapability(eq(Constants.Capabilities.executionReportUrl))).andReturn(urlWithParams);
+        expect(capabilitiesMock.getCapability(eq(Constants.Capabilities.executionReportUrl))).andReturn(REPORT_URL);
 
         replay(webDriverMock, capabilitiesMock);
 
