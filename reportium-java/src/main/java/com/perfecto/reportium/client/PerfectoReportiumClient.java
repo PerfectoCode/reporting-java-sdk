@@ -11,7 +11,9 @@ import com.perfecto.reportium.test.TestContext;
 import com.perfecto.reportium.test.result.TestResult;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.client.utils.URLEncodedUtils;
 import org.openqa.selenium.HasCapabilities;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
@@ -29,6 +31,7 @@ import static com.perfecto.reportium.model.util.ExecutionContextPopulator.EQUALS
 class PerfectoReportiumClient implements ReportiumClient {
 
     private final Logger LOGGER = Logger.getLogger(PerfectoReportiumClient.class.getName());
+    public static final String UTF_8 = "UTF-8";
 
     private final static String START_TEST_COMMAND = "mobile:test:start";
     private final static String START_STEP_COMMAND = "mobile:step:start";
@@ -217,13 +220,20 @@ class PerfectoReportiumClient implements ReportiumClient {
             throw new ReportiumException("WebDriver instance is assumed to have Selenium Capabilities");
         }
 
-        Object value = ((HasCapabilities) webDriver).getCapabilities().getCapability(Constants.Capabilities.executionReportUrl);
-        if (value == null) {
-            return null;
-        }
-        
+        Object value = ((HasCapabilities) webDriver).getCapabilities()
+                .getCapability(Constants.Capabilities.executionReportUrl);
+
+        return value == null ? null : formatReportUrl(String.valueOf(value));
+    }
+
+    private void executeScript(String script, Map<String, Object> params) {
+        // Execute script
+        WebDriver webDriver = perfectoExecutionContext.getWebDriver();
+        ((JavascriptExecutor) webDriver).executeScript(script, params);
+    }
+
+    private String formatReportUrl(String reportUrl) {
         try {
-            String reportUrl = String.valueOf(value);
             URI originalUri = new URI(reportUrl);
             URIBuilder uriBuilder = new URIBuilder()
                     .setScheme(originalUri.getScheme())
@@ -231,28 +241,13 @@ class PerfectoReportiumClient implements ReportiumClient {
                     .setPort(originalUri.getPort())
                     .setPath(originalUri.getPath());
 
-            // Parse and add query parameters - URIBuilder will encode them
-            if (originalUri.getQuery() != null) {
-                String[] pairs = originalUri.getQuery().split("&");
-                for (String pair : pairs) {
-                    String[] keyValue = pair.split("=", 2);
-                    if (keyValue.length == 2) {
-                        uriBuilder.addParameter(keyValue[0], keyValue[1]);
-                    } else {
-                        uriBuilder.addParameter(keyValue[0], "");
-                    }
-                }
+            for (NameValuePair param : URLEncodedUtils.parse(originalUri, UTF_8)) {
+                uriBuilder.addParameter(param.getName(), param.getValue());
             }
             return uriBuilder.build().toString();
         } catch (URISyntaxException e) {
             // Fallback to previous behavior: return the raw capability string
-            return String.valueOf(value);
+            return reportUrl;
         }
-    }
-
-    private void executeScript(String script, Map<String, Object> params) {
-        // Execute script
-        WebDriver webDriver = perfectoExecutionContext.getWebDriver();
-        ((JavascriptExecutor) webDriver).executeScript(script, params);
     }
 }
