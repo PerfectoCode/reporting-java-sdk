@@ -91,7 +91,7 @@ public class PerfectoReportiumClientTest {
         replay(webDriverMock, capabilitiesMock);
 
         String actualUrl = client.getReportUrl();
-        assertEquals(actualUrl, EXPECTED_REPORT_URL);
+        assertEquals(EXPECTED_REPORT_URL, actualUrl);
 
         verify(webDriverMock, capabilitiesMock);
     }

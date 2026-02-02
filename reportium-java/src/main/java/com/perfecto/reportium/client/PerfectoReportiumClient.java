@@ -11,7 +11,6 @@ import com.perfecto.reportium.test.TestContext;
 import com.perfecto.reportium.test.result.TestResult;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.openqa.selenium.HasCapabilities;
@@ -24,6 +23,7 @@ import java.util.*;
 import java.util.logging.Logger;
 
 import static com.perfecto.reportium.model.util.ExecutionContextPopulator.EQUALS;
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 /**
  * Reportium instance that transmits test data to MCM
@@ -31,7 +31,6 @@ import static com.perfecto.reportium.model.util.ExecutionContextPopulator.EQUALS
 class PerfectoReportiumClient implements ReportiumClient {
 
     private final Logger LOGGER = Logger.getLogger(PerfectoReportiumClient.class.getName());
-    public static final String UTF_8 = "UTF-8";
 
     private final static String START_TEST_COMMAND = "mobile:test:start";
     private final static String START_STEP_COMMAND = "mobile:step:start";
@@ -241,9 +240,7 @@ class PerfectoReportiumClient implements ReportiumClient {
                     .setPort(originalUri.getPort())
                     .setPath(originalUri.getPath());
 
-            for (NameValuePair param : URLEncodedUtils.parse(originalUri, UTF_8)) {
-                uriBuilder.addParameter(param.getName(), param.getValue());
-            }
+            uriBuilder.setParameters(URLEncodedUtils.parse(originalUri, UTF_8));
             return uriBuilder.build().toString();
         } catch (URISyntaxException e) {
             // Fallback to previous behavior: return the raw capability string
