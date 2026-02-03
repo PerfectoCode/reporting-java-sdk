@@ -19,6 +19,8 @@ import static org.testng.Assert.assertEquals;
  * Test case for {@link PerfectoReportiumClient}
  */
 public class PerfectoReportiumClientTest {
+    public static final String EXPECTED_REPORT_URL = "https://tenant.reporting.perfectomobile.com/library?externalId%5B0%5D=32f76d03";
+    public static final String REPORT_URL = "https://tenant.reporting.perfectomobile.com/library?externalId[0]=32f76d03";
 
     /**
      * Marker interface for EasyMock to simulate a RemoteWebDriver.
@@ -40,7 +42,7 @@ public class PerfectoReportiumClientTest {
         expect(webDriverMock.executeScript(eq("mobile:test:step"), isA(Map.class))).andReturn(2000).times(2);
         expect(webDriverMock.executeScript(eq("mobile:test:end"), isA(Map.class))).andReturn(3000);
         expect(webDriverMock.getCapabilities()).andReturn(capabilitiesMock);
-        expect(capabilitiesMock.getCapability(eq(Constants.Capabilities.executionReportUrl))).andReturn("link");
+        expect(capabilitiesMock.getCapability(eq(Constants.Capabilities.executionReportUrl))).andReturn(REPORT_URL);
 
         replay(webDriverMock, capabilitiesMock);
 
@@ -48,7 +50,7 @@ public class PerfectoReportiumClientTest {
         client.testStep("step1");
         client.testStep("step2");
         client.testStop(TestResultFactory.createFailure("Just because", new Throwable("Yikes")));
-        assertEquals(client.getReportUrl(), "link");
+        assertEquals(client.getReportUrl(), EXPECTED_REPORT_URL);
 
         verify(webDriverMock, capabilitiesMock);
     }
@@ -73,4 +75,25 @@ public class PerfectoReportiumClientTest {
     public void testRequiredWebDriver() {
         new PerfectoExecutionContext.PerfectoExecutionContextBuilder().build();
     }
+    
+    @Test
+    public void testGetReportUrl_WithQueryParameters() {
+        DriverWithCapabilities webDriverMock = createMock(DriverWithCapabilities.class);
+        PerfectoExecutionContext context = new PerfectoExecutionContext.PerfectoExecutionContextBuilder()
+                .withWebDriver(webDriverMock)
+                .build();
+        PerfectoReportiumClient client = new PerfectoReportiumClient(context);
+        Capabilities capabilitiesMock = createMock(Capabilities.class);
+
+        expect(webDriverMock.getCapabilities()).andReturn(capabilitiesMock);
+        expect(capabilitiesMock.getCapability(eq(Constants.Capabilities.executionReportUrl))).andReturn(REPORT_URL);
+
+        replay(webDriverMock, capabilitiesMock);
+
+        String actualUrl = client.getReportUrl();
+        assertEquals(EXPECTED_REPORT_URL, actualUrl);
+
+        verify(webDriverMock, capabilitiesMock);
+    }
+
 }
