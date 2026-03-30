@@ -1,5 +1,5 @@
 package com.perfecto.reportium.imports.model.command;
 
 public enum CommandType {
-    DEFAULT, API, ASSERTION
+    DEFAULT, API, ASSERTION, COMMENT
 }
