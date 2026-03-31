@@ -13,7 +13,7 @@ import org.testng.annotations.Test;
  */
 public class JobPopulatorTest extends BaseSdkTest {
 
-    private static int SOURCE_JOB_NUMBER = 123456;
+    private static long SOURCE_JOB_NUMBER = 123456;
     private static String SOURCE_JOB_NAME = "My custom job name";
     private static String SOURCE_JOB_BRANCH = "job-branch";
 

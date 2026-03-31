@@ -7,7 +7,7 @@ import java.util.Objects;
  */
 public class Job {
 
-    private int number; // build number
+    private long number; // build number
     private String name; // job name
     private String branch; // feature branch
 
@@ -19,11 +19,11 @@ public class Job {
         this.number = number;
     }
 
-    public int getNumber() {
+    public long getNumber() {
         return number;
     }
 
-    public void setNumber(int number) {
+    public void setNumber(long number) {
         this.number = number;
     }
 
