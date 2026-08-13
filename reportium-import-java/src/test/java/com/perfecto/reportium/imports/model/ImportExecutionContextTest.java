@@ -131,4 +131,68 @@ public class ImportExecutionContextTest {
 
         assertEquals(0, context.getPlatforms().size());
     }
+
+    @Test
+    public void withPlatforms_nullVarargsArray_noOp() {
+        ImportExecutionContext context = new ImportExecutionContext.Builder()
+                .withPlatforms((Platform[]) null)
+                .build();
+
+        assertEquals(0, context.getPlatforms().size());
+    }
+
+    @Test
+    public void withPlatforms_nullCollection_noOp() {
+        ImportExecutionContext context = new ImportExecutionContext.Builder()
+                .withPlatforms((java.util.Collection<Platform>) null)
+                .build();
+
+        assertEquals(0, context.getPlatforms().size());
+    }
+
+    @Test
+    public void withPlatforms_multiplePlatforms() {
+        Platform platform1 = new Platform.Builder().withDeviceId("device-1").build();
+        Platform platform2 = new Platform.Builder().withDeviceId("device-2").build();
+        ImportExecutionContext context = new ImportExecutionContext.Builder()
+                .withPlatforms(platform1, platform2)
+                .build();
+
+        assertEquals(2, context.getPlatforms().size());
+    }
+
+    @Test
+    public void withAutomationFramework() {
+        ImportExecutionContext context = new ImportExecutionContext.Builder()
+                .withAutomationFramework("Selenium")
+                .build();
+
+        assertEquals("Selenium", context.getAutomationFramework());
+    }
+
+    @Test
+    public void getExternalId() {
+        ImportExecutionContext context = new ImportExecutionContext.Builder()
+                .withExternalId("ext-1")
+                .build();
+
+        assertEquals("ext-1", context.getExternalId());
+    }
+
+    @Test
+    public void updatePlatforms_seleniumCapabilities_unknownBrowserType() {
+        ImportExecutionContext context = new ImportExecutionContext.Builder().build();
+
+        Map<String, String> capabilities = new HashMap<>();
+        capabilities.put(SELENIUM_BROWSER_NAME, "SomeUnknownBrowser");
+        capabilities.put(SELENIUM_VERSION, "1.0");
+        context.updatePlatforms(capabilities);
+
+        assertEquals(1, context.getPlatforms().size());
+        Platform platform = context.getPlatforms().iterator().next();
+        BrowserInfo browserInfo = platform.getBrowserInfo();
+        assertNotNull(browserInfo);
+        assertNull(browserInfo.getBrowserType());
+        assertNull(platform.getOs());
+    }
 }
