@@ -153,6 +153,28 @@ public class ScreenshotAttachmentTest {
     }
 
     @Test
+    public void build_stream_guessExtension_png() {
+        ByteArrayInputStream inputStream = new ByteArrayInputStream("test".getBytes());
+        String extension = "png";
+        ContentType contentType = ScreenshotAttachment.IMAGE_PNG;
+        ScreenshotAttachment attachment = new ScreenshotAttachment.Builder()
+                .withContentType(contentType)
+                .withInputStream(inputStream)
+                .build();
+        assertNotNull(attachment.getInputStream());
+        assertEquals(extension, attachment.getExtension());
+        assertEquals(contentType, attachment.getContentType());
+    }
+
+    @Test(expectedExceptions = IllegalArgumentException.class)
+    public void build_stream_noExtensionNoContentType_throws() {
+        ByteArrayInputStream inputStream = new ByteArrayInputStream("test".getBytes());
+        new ScreenshotAttachment.Builder()
+                .withInputStream(inputStream)
+                .build();
+    }
+
+    @Test
     public void build_stream_guessExtension() {
         ByteArrayInputStream inputStream = new ByteArrayInputStream("test".getBytes());
         String extension = "jpg";

@@ -32,6 +32,13 @@
             <artifactId>selenium-remote-driver</artifactId>
             <scope>provided</scope>
         </dependency>
+
+        <!-- test dependencies -->
+        <dependency>
+            <groupId>org.easymock</groupId>
+            <artifactId>easymock</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
