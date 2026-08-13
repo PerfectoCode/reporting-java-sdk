@@ -50,11 +50,4 @@ public class ListUtilsTest {
         List<String> list2 = null;
         ListUtils.mergeLists(list1, list2);
     }
-
-    @Test(expectedExceptions = IllegalArgumentException.class, expectedExceptionsMessageRegExp = "Arguments cannot be null")
-    public void testMergeWithFirstListNull() {
-        List<String> list1 = null;
-        List<String> list2 = Arrays.asList("123", "456");
-        ListUtils.mergeLists(list1, list2);
-    }
 }

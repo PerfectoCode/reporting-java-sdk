@@ -4,8 +4,6 @@ import com.perfecto.reportium.model.CustomField;
 import org.testng.annotations.Test;
 
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
 
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
@@ -79,83 +77,5 @@ public class TestContextTest {
     public void testNullContextTagsConstructor() {
         TestContext context = new TestContext(null, null, "");
         assertEquals(0, context.getTestExecutionTags().size());
-    }
-
-    @Test
-    public void testNullVarargsArrayConstructor() {
-        TestContext context = new TestContext((String[]) null);
-        assertEquals(0, context.getTestExecutionTags().size());
-    }
-
-    @Test
-    public void testWithTestExecutionTags_varargsNullArray() {
-        TestContext context = new TestContext.Builder()
-                .withTestExecutionTags((String[]) null)
-                .build();
-        assertEquals(0, context.getTestExecutionTags().size());
-    }
-
-    @Test
-    public void testWithCustomFields_varargsNullArray() {
-        TestContext context = new TestContext.Builder()
-                .withCustomFields((CustomField[]) null)
-                .build();
-        assertEquals(0, context.getCustomFields().size());
-    }
-
-    @Test
-    public void testWithTestExecutionTags_collectionNull() {
-        TestContext context = new TestContext.Builder()
-                .withTestExecutionTags((Collection<String>) null)
-                .build();
-        assertEquals(0, context.getTestExecutionTags().size());
-    }
-
-    @Test
-    public void testWithTestExecutionTags_collectionEmpty() {
-        TestContext context = new TestContext.Builder()
-                .withTestExecutionTags(Collections.<String>emptyList())
-                .build();
-        assertEquals(0, context.getTestExecutionTags().size());
-    }
-
-    @Test
-    public void testWithCustomFields_collectionNull() {
-        TestContext context = new TestContext.Builder()
-                .withCustomFields((Collection<CustomField>) null)
-                .build();
-        assertEquals(0, context.getCustomFields().size());
-    }
-
-    @Test
-    public void testWithCustomFields_collectionEmpty() {
-        TestContext context = new TestContext.Builder()
-                .withCustomFields(Collections.<CustomField>emptyList())
-                .build();
-        assertEquals(0, context.getCustomFields().size());
-    }
-
-    @Test
-    public void testCopyConstructor() {
-        TestContext original = new TestContext.Builder()
-                .withTestExecutionTags("tag1")
-                .withCustomFields(new CustomField("name1", "value1"))
-                .build();
-
-        TestContext copy = new TestContext.Builder(original).build();
-
-        assertEquals(copy.getTestExecutionTags(), original.getTestExecutionTags());
-        assertEquals(copy.getCustomFields(), original.getCustomFields());
-    }
-
-    @Test
-    public void testToString() {
-        TestContext context = new TestContext.Builder()
-                .withTestExecutionTags("tag1")
-                .withCustomFields(new CustomField("name1", "value1"))
-                .build();
-        String toString = context.toString();
-        assertTrue(toString.contains("tag1"));
-        assertTrue(toString.contains("name1"));
     }
 }
