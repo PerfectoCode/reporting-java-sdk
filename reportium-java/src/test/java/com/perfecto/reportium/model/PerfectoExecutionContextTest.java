@@ -41,6 +41,17 @@ public class PerfectoExecutionContextTest extends BaseSdkTest {
         assertEquals(0, perfectoExecutionContext.getCustomFields().size());
     }
 
+    @SuppressWarnings("deprecation")
+    @Test
+    public void test_getWebdriverDeprecatedDelegatesToGetWebDriver() {
+        WebDriver webDriverMock = EasyMock.createNiceMock(WebDriver.class);
+        PerfectoExecutionContext perfectoExecutionContext = new PerfectoExecutionContext.PerfectoExecutionContextBuilder()
+                .withWebDriver(webDriverMock)
+                .build();
+
+        assertEquals(perfectoExecutionContext.getWebdriver(), webDriverMock);
+    }
+
     @Test
     public void test_nullContextTags() {
         final String tag = null;
