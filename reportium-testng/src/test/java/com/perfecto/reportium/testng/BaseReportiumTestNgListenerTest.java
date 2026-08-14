@@ -9,8 +9,10 @@ import com.perfecto.reportium.test.result.TestResultSuccess;
 import org.testng.IClass;
 import org.testng.IInvokedMethod;
 import org.testng.ITestResult;
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.Test;
 
+import java.lang.reflect.Field;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -34,6 +36,15 @@ public class BaseReportiumTestNgListenerTest {
     private BaseReportiumTestNgListener newListener() {
         return new BaseReportiumTestNgListener() {
         };
+    }
+
+    @AfterMethod
+    public void teardown() throws Exception {
+        // ReportiumClientProvider only exposes get()/set(), so the ThreadLocal it backs must be
+        // reset via reflection to avoid leaking state into other tests on this thread.
+        Field field = ReportiumClientProvider.class.getDeclaredField("reportiumClient");
+        field.setAccessible(true);
+        ((ThreadLocal<?>) field.get(null)).remove();
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})

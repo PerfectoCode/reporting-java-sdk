@@ -3,6 +3,8 @@ package com.perfecto.reportium.client;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.Test;
 
+import java.lang.reflect.Field;
+
 import static org.testng.Assert.assertNotNull;
 import static org.testng.Assert.assertNull;
 import static org.testng.Assert.assertSame;
@@ -20,10 +22,12 @@ public class ReportiumClientProviderTest {
     }
 
     @AfterMethod
-    public void teardown() {
-        // Clear thread local state left over from tests, since it is stored in a static ThreadLocal
-        DigitalZoomClient client = createMock(DigitalZoomClient.class);
-        ReportiumClientProvider.set(client);
+    public void teardown() throws Exception {
+        // ReportiumClientProvider only exposes get()/set(), so the ThreadLocal it backs must be
+        // reset via reflection to avoid leaking state into other tests on this thread.
+        Field field = ReportiumClientProvider.class.getDeclaredField("reportiumClient");
+        field.setAccessible(true);
+        ((ThreadLocal<?>) field.get(null)).remove();
     }
 
     @Test
